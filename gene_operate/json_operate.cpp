@@ -281,4 +281,64 @@ void json_write(std::string filename,std::string *json_name,double *json_value,i
     }
 }
 
+/*
+    写入json文件
+    @filename:写入的文件名称
+    @json_name:写入的变量名称
+    @json_value:写入的变量数值
+    @save_num:需要保存数据的个数
+    @length:字符串长度
+*/
+void json_write(std::string filename,char *json_name,double *json_value,int save_num,int length)
+{
+    QVariantHash jsondata;
+    QVariantHash subData1;
+    std::string t_string;//*json_name;
+    char char_temp[length];
+
+    for(int i=0;i<length;i++)
+    {
+        char_temp[i]=*json_name;
+        json_name++;
+    }
+
+    t_string=char_temp;
+
+    QString save_tpye=QString::fromStdString(t_string);
+
+    for(int i=0;i<save_num-1;i++)
+    {
+        for(int i=0;i<length;i++)
+        {
+            char_temp[i]=*json_name;
+            json_name++;
+        }
+
+        t_string=char_temp;
+
+        json_value++;
+        subData1.insert(QString::fromStdString(t_string),*json_value);
+        jsondata.insert(save_tpye,subData1);
+
+        QJsonObject rootObj = QJsonObject::fromVariantHash(jsondata);
+        QJsonDocument document;
+        document.setObject(rootObj);
+
+        QByteArray byte_array=document.toJson(QJsonDocument::Compact);
+        QString json_str(byte_array);
+        //根据实际填写路径
+        QString name=QString::fromStdString(filename);
+        QFile file(name);
+
+        if (!file.open(QIODevice::ReadWrite|QIODevice::Text))
+        {
+            qDebug() << "file error!";
+        }
+        QTextStream in(&file);
+        in << json_str;
+
+        file.close();   // 关闭file
+    }
+}
+
 };
