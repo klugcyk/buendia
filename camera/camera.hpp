@@ -3,7 +3,7 @@
     author:klug
     献给我的心上人等待天使的妹妹
     start:221129
-    last:230609
+    last:230626
 */
 
 #ifndef CAMERA_HPP
@@ -57,6 +57,7 @@ public:
     void camera_set_parameter_zwei();//读取连个相机的参数
     void camera_read_parameter_zwei();
     void camera_grab_gray();
+    void camera_grab_zwei();
     void camera_grab_rgb();
     cv::Mat camera_grab_gray_return();
     cv::Mat camera_grab_rgb_return();
@@ -77,8 +78,8 @@ public:
     int read_height=6174;
     int read_width=6174;
     int read_exposure_time=6174; //us
-    int exposure_time_link=6174; //us
-    int exposure_time_richt=6174; //us
+    int camera_exposure_time_link=6174; //us
+    int camera_exposure_time_richt=6174; //us
     int max_width=2000;
     int max_height=2000;
     cv::Mat camera_grab_img;

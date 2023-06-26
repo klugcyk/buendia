@@ -3,7 +3,7 @@
     author:klug
     献给我的心上人等待天使的妹妹
     start:221129
-    last:230609
+    last:230625
 */
 
 #include "camera.hpp"
@@ -123,6 +123,8 @@ void basler_camera::camera_grab_rgb()
                 cv::imwrite("/home/klug/img/construct/cam_img.png",cam_img);
                 ptrGrabResult.Release();
             }
+            cam_width=cam_img.cols;
+            cam_height=cam_img.rows;
         }
 
         cameras.DestroyDevice();
@@ -266,6 +268,77 @@ void basler_camera::camera_grab_gray()
                 cv::imwrite("/home/klug/img/construct/cam_img.png",cam_img);
                 ptrGrabResult.Release();
             }
+            cam_width=cam_img.cols;
+            cam_height=cam_img.rows;
+        }
+
+        cameras.DestroyDevice();
+        devices.empty();
+    }
+    catch (const GenericException& e)
+    {
+        cerr << "An exception occurred." << endl
+            << e.GetDescription() << endl;
+    }
+}
+
+void basler_camera::camera_grab_zwei()
+{
+    try
+    {
+        CTlFactory& tlFactory = CTlFactory::GetInstance();
+
+        DeviceInfoList_t devices;
+        if (tlFactory.EnumerateDevices( devices ) == 0)
+        {
+            throw RUNTIME_EXCEPTION("No camera present.");
+        }
+
+        CInstantCameraArray cameras(min(devices.size(),c_maxCamerasToUse));
+        for (size_t i = 0; i < cameras.GetSize(); ++i)
+        {
+            cameras[i].Attach( tlFactory.CreateDevice(devices[i]));
+            cout<<"Using device " << cameras[i].GetDeviceInfo().GetModelName() << endl;
+        }
+
+        CGrabResultPtr ptrGrabResult;
+        CPylonImage pylonImage;
+        CImageFormatConverter cov;
+
+        cameras[0].GrabOne(5000, ptrGrabResult, TimeoutHandling_ThrowException);
+        if (ptrGrabResult->GrabSucceeded())
+        {
+            cov.Convert(pylonImage,ptrGrabResult);
+            cv::Mat cvImg(ptrGrabResult->GetHeight(),ptrGrabResult->GetWidth(),CV_8U,(uint8_t*) pylonImage.GetBuffer());
+
+            cam_img=cvImg;
+#ifdef camera_print_data_info
+            printf("camera_grab_img.channels:=%d\n",cvImg.channels());
+#endif
+            if(!cam_img.empty())
+            {
+                cv::imwrite("/home/klug/img/zwei_construct/cam_link.png",cam_img);
+                ptrGrabResult.Release();
+            }
+        }
+
+        cameras[1].GrabOne(5000, ptrGrabResult, TimeoutHandling_ThrowException);
+        if (ptrGrabResult->GrabSucceeded())
+        {
+            cov.Convert(pylonImage,ptrGrabResult);
+            cv::Mat cvImg(ptrGrabResult->GetHeight(),ptrGrabResult->GetWidth(),CV_8U,(uint8_t*) pylonImage.GetBuffer());
+
+            cam_img=cvImg;
+#ifdef camera_print_data_info
+            printf("camera_grab_img.channels:=%d\n",cvImg.channels());
+#endif
+            if(!cam_img.empty())
+            {
+                cv::imwrite("/home/klug/img/zwei_construct/cam_richt.png",cam_img);
+                ptrGrabResult.Release();
+            }
+            cam_width=cam_img.cols;
+            cam_height=cam_img.rows;
         }
 
         cameras.DestroyDevice();
@@ -367,18 +440,18 @@ void basler_camera::camera_set_parameter_zwei()
         {
             cameras[0].Attach(tlFactory.CreateDevice(*it));
             cameras[0].Open();
-            cameras[0].ExposureTime.SetValue(exposure_time_link);
-            cameras[0].Width.SetValue(set_width);
-            cameras[0].Height.SetValue(set_height);
-            cameras[0].AcquisitionFrameRate.SetValue(set_camera_fps);
+            cameras[0].ExposureTime.SetValue(camera_exposure_time_link);
+            //cameras[0].Width.SetValue(set_width);
+            //cameras[0].Height.SetValue(set_height);
+            //cameras[0].AcquisitionFrameRate.SetValue(set_camera_fps);
             cameras[0].Close();
 
             cameras[1].Attach(tlFactory.CreateDevice(*it));
             cameras[1].Open();
-            cameras[1].ExposureTime.SetValue(exposure_time_richt);
-            cameras[1].Width.SetValue(set_width);
-            cameras[1].Height.SetValue(set_height);
-            cameras[1].AcquisitionFrameRate.SetValue(set_camera_fps);
+            cameras[1].ExposureTime.SetValue(camera_exposure_time_richt);
+            //cameras[1].Width.SetValue(set_width);
+            //cameras[1].Height.SetValue(set_height);
+            //cameras[1].AcquisitionFrameRate.SetValue(set_camera_fps);
             cameras[1].Close();
         }
         catch (const GenericException &e)
@@ -408,7 +481,7 @@ void basler_camera::camera_read_parameter_zwei()
         {
             cameras[0].Attach(tlFactory.CreateDevice(*it));
             cameras[0].Open();
-            exposure_time_link=cameras[0].ExposureTime.GetValue();
+            camera_exposure_time_link=cameras[0].ExposureTime.GetValue();
             read_width=cameras[0].Width.GetValue();
             read_height=cameras[0].Height.GetValue();
             read_camera_fps=cameras[0].AcquisitionFrameRate.GetValue();
@@ -416,7 +489,7 @@ void basler_camera::camera_read_parameter_zwei()
 
             cameras[1].Attach(tlFactory.CreateDevice(*it));
             cameras[1].Open();
-            exposure_time_richt=cameras[1].ExposureTime.GetValue();
+            camera_exposure_time_richt=cameras[1].ExposureTime.GetValue();
             read_width=cameras[1].Width.GetValue();
             read_height=cameras[1].Height.GetValue();
             read_camera_fps=cameras[1].AcquisitionFrameRate.GetValue();
