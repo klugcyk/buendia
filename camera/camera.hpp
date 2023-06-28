@@ -3,7 +3,7 @@
     author:klug
     献给我的心上人等待天使的妹妹
     start:221129
-    last:230626
+    last:230628
 */
 
 #ifndef CAMERA_HPP
@@ -18,9 +18,9 @@
 
 #define use_pylon_camera // use the pylon camera
 
-//#define camera_print_msg_info
-//#define camera_print_data_info
-//#define camera_print_error_info
+#define camera_print_msg_info
+#define camera_print_data_info
+#define camera_print_error_info
 #define camera_save
 #define camera_continue 1 //开启相机连续采集 1
 
@@ -43,6 +43,25 @@ using namespace Pylon;
 #endif
 
 extern std::mutex mtx;
+//相机常规操作
+class cameraGene
+{
+public:
+    cameraGene();
+    cameraGene(int xSize,int ySize,float xLength,float yLength);
+    ~cameraGene();
+    void cameraCalibrate(std::vector<cv::Mat> img_vector);
+
+public:
+    cv::Mat cameraMatrix=cv::Mat(3,3,CV_32FC1,cv::Scalar::all(0)); //相机内参
+    cv::Mat distCoeffs=cv::Mat(1,5,CV_32FC1,cv::Scalar::all(0)); //畸变系数
+    std::vector<cv::Mat> extrinsic;
+    cv::Size board_size=cv::Size(6,9); //标定板的尺度
+    cv::Size2f square_size=cv::Size2f(6.96,6.96); //标定板的格子大小 3.95
+    std::vector<cv::Mat> rvecsMat;
+    std::vector<cv::Mat> rotation_matrix;
+    std::vector<cv::Mat> tvecsMat;
+};
 
 #ifdef use_pylon_camera
 
