@@ -100,7 +100,9 @@ void basler_camera::camera_grab_rgb()
         for (size_t i = 0; i < cameras.GetSize(); ++i)
         {
             cameras[i].Attach( tlFactory.CreateDevice(devices[i]));
+#ifdef camera_print_msg_info
             cout<<"Using device " << cameras[i].GetDeviceInfo().GetModelName() << endl;
+#endif
         }
 
         CGrabResultPtr ptrGrabResult;
@@ -346,8 +348,10 @@ void basler_camera::camera_grab_zwei()
     }
     catch (const GenericException& e)
     {
+#ifdef camera_print_error_info
         cerr << "An exception occurred." << endl
             << e.GetDescription() << endl;
+#endif
     }
 }
 
@@ -379,8 +383,10 @@ void basler_camera::camera_set_parameter()
             }
             catch (const GenericException &e)
             {
+#ifdef camera_print_error_info
                 cerr << "An exception occurred." << endl
                     << e.GetDescription() << endl;
+#endif
             }
         }
     }
@@ -414,8 +420,10 @@ void basler_camera::camera_read_parameter()
         }
         catch (const GenericException &e)
         {
+#ifdef camera_print_error_info
             cerr << "An exception occurred." << endl
                 << e.GetDescription() << endl;
+#endif
         }
     }
     cameras.DestroyDevice();
