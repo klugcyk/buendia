@@ -1,3 +1,0 @@
-/home/klug/sakura/generateLib/cameraGene/build/CMakeFiles/cameraGene.dir
-/home/klug/sakura/generateLib/cameraGene/build/CMakeFiles/edit_cache.dir
-/home/klug/sakura/generateLib/cameraGene/build/CMakeFiles/rebuild_cache.dir
