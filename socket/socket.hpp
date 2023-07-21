@@ -3,7 +3,7 @@
     author:klug
     献给我的心上人等待天使的妹妹
     start:221123
-    last:230607
+    last:230721
 */
 
 #ifndef SOCKET_HPP
@@ -33,9 +33,12 @@
 #include <thread>
 #include <vector>
 
-//#define socket_print_msg_info
-//#define socket_print_data_info
-//#define socket_print_error_info
+#define socket_print_msg_info
+#define socket_print_data_info
+#define socket_print_error_info
+
+namespace buendia
+{
 
 class socket_
 {
@@ -48,12 +51,17 @@ public:
     void socket_client(const char *ip,int port);
     int socket_server_initial(const char *ip,int port);
     int socket_client_initial(const char *ip,int port);
+    int socketClientOperate(int socket_fd,char *send_add,int send_length);
+    int socketServerOperate(int socket_fd,char *send_add,int send_length);
+    void socketGetWord(char *address,int send_length);
 
 public:
     const int BACKLOG = 3;
     uint8_t listen_recvBuf[1024];
     char recvBuf[100];
-    unsigned char sendBuf[100];
+    char sendBuf[1024];
+
+};
 
 };
 

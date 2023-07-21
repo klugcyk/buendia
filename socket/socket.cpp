@@ -3,7 +3,7 @@
     author:klug
     献给安德烈尼古拉耶维奇科尔莫哥洛夫
     start:221123
-    last:230607
+    last:230721
 */
 
 #include "socket.hpp"
@@ -32,6 +32,9 @@
 #include <cstring>
 
 using namespace std;
+
+namespace buendia
+{
 
 socket_::socket_()
 {
@@ -351,3 +354,56 @@ void socket_::socket_server(const char *ip,int port,char *send_add,int send_leng
         close(socket_accept);
     }
 }
+
+/*
+    socket客户端发送数据
+    @socket_fd:socket创建编号
+    @send_add:发送数据的首地址
+    @send_length:发送数据长度
+    @ret:返回值，接受到服务器反馈数据大小
+*/
+int socket_::socketClientOperate(int socket_fd,char *send_add,int send_length)
+{
+    // 获取数据到sendbuf
+    socketGetWord(send_add,send_length);
+    int ret=send(socket_fd,sendBuf,strlen(sendBuf),0);
+    // 读取下位机的返回值
+    if(ret<0)
+    {
+#ifdef socket_print_error_info
+    std::cout<<"send error..."<<std::endl;
+#endif
+    }
+    else
+    {
+        ret=recv(socket_fd,recvBuf,1024,0);
+    }
+
+#ifdef socket_print_data_info
+    std::cout << "back:=" << recvBuf  << std::endl;
+#endif
+
+    return ret;
+}
+
+/*
+    socket服务器发送数据
+    @socket_fd:socket创建编号
+    @send_add:发送数据的首地址
+    @send_length:发送数据长度
+    @ret:返回值，接受到客户端反馈数据大小
+*/
+int socket_::socketServerOperate(int socket_fd,char *send_add,int send_length)
+{
+    return 0;
+}
+
+/*
+    保存数据到sendBuf中
+*/
+void socket_::socketGetWord(char *address,int send_length)
+{
+
+}
+
+};
