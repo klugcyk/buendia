@@ -33,9 +33,9 @@
 #include <thread>
 #include <vector>
 
-#define socket_print_msg_info
-#define socket_print_data_info
-#define socket_print_error_info
+//#define socket_print_msg_info
+//#define socket_print_data_info
+//#define socket_print_error_info
 
 class socket_
 {
