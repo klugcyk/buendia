@@ -37,6 +37,10 @@
 #define socket_print_data_info
 #define socket_print_error_info
 
+#define maxSendLength 1024
+#define maxRecvLength 1024
+#define maxListenLength 1024
+
 namespace buendia
 {
 
@@ -57,9 +61,11 @@ public:
 
 public:
     const int BACKLOG = 3;
-    uint8_t listen_recvBuf[1024];
-    char recvBuf[100];
-    char sendBuf[1024];
+    uint8_t listen_recvBuf[maxListenLength];
+    char recvBuf[maxRecvLength];
+    char sendBuf[maxSendLength];
+    unsigned char sendBufu[maxSendLength];
+
 
 };
 

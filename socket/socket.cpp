@@ -3,7 +3,7 @@
     author:klug
     献给安德烈尼古拉耶维奇科尔莫哥洛夫
     start:221123
-    last:230721
+    last:230726
 */
 
 #include "socket.hpp"
@@ -395,6 +395,56 @@ int socket_::socketClientOperate(int socket_fd,char *send_add,int send_length)
 */
 int socket_::socketServerOperate(int socket_fd,char *send_add,int send_length)
 {
+    sockaddr_in client;
+    socklen_t addr_size=sizeof(sockaddr_in);
+
+#ifdef socket_print_msg_info
+    printf("accepting...\n");
+#endif
+    int socket_accept=-1;
+    if(socket_accept==-1)
+    {
+        socket_accept=accept(socket_fd, (sockaddr *)&client, &addr_size);
+    }
+
+    if(socket_accept==-1)
+    {
+#ifdef socket_print_error_info
+        printf("accept fail!!!\n");
+#endif
+    }
+    else
+    {
+#ifdef socket_print_msg_info
+        printf("accept success...\n");
+#endif
+    }
+
+    //读取char数组
+    if(send_length>maxSendLength)
+    {
+        send_length=maxSendLength;
+    }
+
+    for(int i=0;i<send_length;i++)
+    {
+        sendBuf[i]=*send_add;
+        send_add++;
+    }
+
+    //发送接收数据
+    if((recv(socket_accept,recvBuf,maxRecvLength,0))>0)
+    {
+        int send_cond=send(socket_accept,sendBuf,strlen(sendBuf),0);
+        if(send_cond==-1)
+        {
+            socket_accept=-1;
+        }
+        usleep(100000);
+    }
+
+    //close(socket_accept);
+
     return 0;
 }
 
