@@ -3,7 +3,7 @@
     author:klug
     献给恩师阿尔瓦罗赛佩达萨幕迪奥
     start:230323
-    last:230325
+    last:230724
 */
 
 #include "galvo_control/galvo_control.hpp"
@@ -50,9 +50,9 @@ int galvo_control::galvo_rotate(float angle_ein,float angle_zwei)
 #endif
 
     //数据头
-    sendBuf[0]=0xa2;
-    sendBuf[1]=0x00;
-    sendBuf[2]=0x09;
+    sendBufu[0]=0xa2;
+    sendBufu[1]=0x00;
+    sendBufu[2]=0x09;
 
     //数据
     unsigned char *pc;
@@ -60,56 +60,56 @@ int galvo_control::galvo_rotate(float angle_ein,float angle_zwei)
     if(_ein>=0)
     {
         pc=(unsigned char *)(&_ein);
-        sendBuf[3]=0x00; //galvo ein
-        sendBuf[4]=0x00;
-        sendBuf[6]=*pc;
+        sendBufu[3]=0x00; //galvo ein
+        sendBufu[4]=0x00;
+        sendBufu[6]=*pc;
         pc++;
-        sendBuf[5]=*pc;
+        sendBufu[5]=*pc;
     }
     else
     {
         pc=(unsigned char *)(&_ein);
-        sendBuf[3]=0xff; //galvo ein
-        sendBuf[4]=0xff;
-        sendBuf[6]=*pc;
+        sendBufu[3]=0xff; //galvo ein
+        sendBufu[4]=0xff;
+        sendBufu[6]=*pc;
         pc++;
-        sendBuf[5]=*pc;
+        sendBufu[5]=*pc;
     }
 
     if(_zwei>=0)
     {
         pc=(unsigned char *)(&_zwei);
-        sendBuf[7]=0x00; //galvo zwei
-        sendBuf[8]=0x00;
-        sendBuf[10]=*pc;
+        sendBufu[7]=0x00; //galvo zwei
+        sendBufu[8]=0x00;
+        sendBufu[10]=*pc;
         pc++;
-        sendBuf[9]=*pc;
+        sendBufu[9]=*pc;
     }
     else
     {
         pc=(unsigned char *)(&_zwei);
-        sendBuf[7]=0xff; //galvo zwei
-        sendBuf[8]=0xff;
-        sendBuf[10]=*pc;
+        sendBufu[7]=0xff; //galvo zwei
+        sendBufu[8]=0xff;
+        sendBufu[10]=*pc;
         pc++;
-        sendBuf[9]=*pc;
+        sendBufu[9]=*pc;
     }
 
     //响应位
-    sendBuf[11]=0x01; //galvo response
+    sendBufu[11]=0x01; //galvo response
 
     //校验
     unsigned short crc;
     Platform::Communication::Crc16Class c;
-    crc=c.crc16(sendBuf,12);
+    crc=c.crc16(sendBufu,12);
     unsigned char *p;
     p=(unsigned char*)&crc;
-    sendBuf[12]=*p;
+    sendBufu[12]=*p;
     p++;
-    sendBuf[13]=*p;
+    sendBufu[13]=*p;
 
     //发送
-    galvo_state=send(socket_accept,sendBuf,14,0);
+    galvo_state=send(socket_accept,sendBufu,14,0);
 
     return galvo_state;
 }
@@ -119,13 +119,13 @@ int galvo_control::galvo_rotate(float angle_ein,float angle_zwei)
 */
 void galvo_control::galvo_read()
 {
-    sendBuf[0]=0xa2;
-    sendBuf[1]=0x03;
-    sendBuf[2]=0x00;
-    sendBuf[3]=0xd0;
-    sendBuf[4]=0xd2;
+    sendBufu[0]=0xa2;
+    sendBufu[1]=0x03;
+    sendBufu[2]=0x00;
+    sendBufu[3]=0xd0;
+    sendBufu[4]=0xd2;
 
-    send(socket_accept,sendBuf,5,0);
+    send(socket_accept,sendBufu,5,0);
     //usleep(1000);
     if(recv(socket_accept,recvBuf,13,0)>0)
     {

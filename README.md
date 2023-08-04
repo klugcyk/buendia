@@ -42,11 +42,6 @@ void galvo_read()
 # ethercat 通讯
 
 
-
-# math
-
-数学运算算法库
-
 # socket 通讯
 
 class socket_

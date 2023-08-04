@@ -84,6 +84,77 @@ basler_camera::~basler_camera()
     PylonTerminate();
 }
 
+void basler_camera::camera_stream()
+{
+    try
+    {
+        // Create an instant camera object for the camera device found first.
+        CInstantCamera camera( CTlFactory::GetInstance().CreateFirstDevice() );
+
+        //camera.AcquisitionStartStopExecutionEnable
+
+        // Open the camera device.
+        camera.Open();
+
+        // Can the camera device be queried whether it is ready to accept the next frame trigger?
+        if (camera.CanWaitForFrameTriggerReady())
+        {
+            // Start the grabbing using the grab loop thread, by setting the grabLoopType parameter
+            // to GrabLoop_ProvidedByInstantCamera. The grab results are delivered to the image event handlers.
+            // The GrabStrategy_OneByOne default grab strategy is used.
+            camera.StartGrabbing( GrabStrategy_OneByOne, GrabLoop_ProvidedByInstantCamera );
+
+            // Wait for user input to trigger the camera or exit the program.
+            // The grabbing is stopped, the device is closed and destroyed automatically when the camera object goes out of scope.
+
+            bool runLoop = true;
+            while (runLoop)
+            {
+                cout << endl << "Enter \"t\" to trigger the camera or \"e\" to exit and press enter? (t/e) "; cout.flush();
+
+                string userInput;
+                getline(cin, userInput);
+
+                for (size_t i = 0; i < userInput.size(); ++i)
+                {
+                    char key = userInput[i];
+                    if ((key == 't' || key == 'T'))
+                    {
+                        // Execute the software trigger. Wait up to 1000 ms for the camera to be ready for trigger.
+                        if (camera.WaitForFrameTriggerReady( 1000, TimeoutHandling_ThrowException ))
+                        {
+                            camera.ExecuteSoftwareTrigger();
+                        }
+                    }
+                    else if ((key == 'e') || (key == 'E'))
+                    {
+                        runLoop = false;
+                        break;
+                    }
+                }
+
+                // Wait some time to allow the OnImageGrabbed handler print its output,
+                // so the printed text on the console is in the expected order.
+                WaitObject::Sleep( 250 );
+            }
+        }
+        else
+        {
+            // See the documentation of CInstantCamera::CanWaitForFrameTriggerReady() for more information.
+            cout << endl << "This sample can only be used with cameras that can be queried whether they are ready to accept the next frame trigger." << endl;
+        }
+    }
+    catch (const GenericException& e)
+    {
+        // Error handling.
+        cerr << "An exception occurred." << endl << e.GetDescription() << endl;
+    }
+
+    // Comment the following two lines to disable waiting on exit.
+    cerr << endl << "Press enter to exit." << endl;
+    while (cin.get() != '\n');
+}
+
 void basler_camera::camera_grab_rgb()
 {
     try

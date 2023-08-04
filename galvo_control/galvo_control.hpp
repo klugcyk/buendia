@@ -31,9 +31,7 @@
 using namespace calibrate_construct;
 #endif
 
-
-
-class galvo_control:public socket_
+class galvo_control:public buendia::socket_
 {
 public:
     galvo_control();
